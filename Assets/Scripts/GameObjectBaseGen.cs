@@ -135,6 +135,8 @@ namespace UnityEditor.Tilemaps
             instance.transform.localRotation = orientation;
             instance.transform.localScale = scale;
             instance.transform.Translate(offset);
+
+            instance.SetActive(false);
         }
 
     }

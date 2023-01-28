@@ -9,9 +9,11 @@ public class TilemapGenerator : MonoBehaviour
 {
     private GameObjectBaseGen baseGen;
     private GameObjectBaseGen.GenCell cellGen;
+    private Displayer displayer;
 
     public GridLayout gridLayout;
 
+    // TODO: each parent layer should be create each time the offset increase by 1 
     public GameObject parentLayer;
 
     public Vector2Int TilemapSize;
@@ -22,10 +24,6 @@ public class TilemapGenerator : MonoBehaviour
     int[] baseGoIndex = new int[] { 1 };
     int[] goIndex = new int[] { 0, 1 };
 
-    private Vector3Int initVect;
-    private Vector3Int initVect2;
-
-
     private void Start()
     {
         baseGen = (GameObjectBaseGen)ScriptableObject.CreateInstance(typeof(GameObjectBaseGen));
@@ -34,8 +32,7 @@ public class TilemapGenerator : MonoBehaviour
         cellGen.go = tileObj;
         Debug.Log("go to paint: " + cellGen.go[1].name);
 
-        initVect = new Vector3Int(1, 1, 0);
-        initVect2 = new Vector3Int(2, 1, 0);
+        displayer = GetComponent<Displayer>();
 
         // TODO: create a button in inspector as value to call the RenderTilemap context menu.
         //RenderTilemap();
@@ -43,12 +40,14 @@ public class TilemapGenerator : MonoBehaviour
 
     /// <summary>
     /// Render the tilemap. The context menu can be call directly on play mode.
+    /// Call the displayer to set active each tile of the current layer with animations.
     /// </summary>
     [ContextMenu("RenderTilemap")]
     private void RenderTilemap()
     {
         int[,] block = GenerateBlockLayer();
 
+        // TODO: iterate over layers
         for (int i = 0; i < block.GetLength(0); i++)
         {
             for (int j = 0; j < block.GetLength(1); j++)
@@ -57,6 +56,7 @@ public class TilemapGenerator : MonoBehaviour
                 Paint(gridLayout, parentLayer.transform, goPos, cellGen.go[block[i,j]], cellGen.offset, cellGen.scale, cellGen.orientation, baseGen.anchor);
             }
         }
+        displayer.HelloDisplayer(parentLayer);
     }
 
 
