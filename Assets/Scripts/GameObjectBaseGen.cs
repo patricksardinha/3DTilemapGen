@@ -52,8 +52,8 @@ namespace UnityEditor.Tilemaps
         public class GenCell
         {
             // GameObject
-            public GameObject go { get { return m_Go; } set { m_Go = value; } }
-            private GameObject m_Go;
+            public GameObject[] go { get { return m_Go; } set { m_Go = value; } }
+            private GameObject[] m_Go;
             
             // Offset
             public Vector3 offset { get { return m_Offset; } set { m_Offset = value; } }
