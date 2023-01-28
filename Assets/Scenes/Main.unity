@@ -153,10 +153,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridLayout: {fileID: 1897170936}
+  parentLayer: {fileID: 1513105091}
+  TilemapSize: {x: 4, y: -10}
   tileObj: {fileID: 919132149155446097, guid: 4789f716b2a95bf49a0fc72d5646c75c, type: 3}
-  parentLayer: {fileID: 1897170935}
-  initVect: {x: 1, y: 1, z: 1}
-  tilemap: {fileID: 1513105094}
 --- !u!4 &134220993
 Transform:
   m_ObjectHideFlags: 0
@@ -165,7 +164,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 134220991}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.356456, y: -4.0411367, z: -4.043341}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -384,7 +383,7 @@ Transform:
   m_GameObject: {fileID: 590912495}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 10, y: 1, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -560,8 +559,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0.11340651, y: 0.8865506, z: -0.32191807, w: -0.31230715}
+  m_LocalPosition: {x: 4.4523163, y: 6.0253224, z: 4.81499}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

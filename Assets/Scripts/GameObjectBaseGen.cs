@@ -45,8 +45,8 @@ namespace UnityEditor.Tilemaps
         private Vector3Int m_Pivot = new Vector3Int(0, 0, 0);
 
         // Tile palette anchor property
-        public new Vector3 anchor { get { return m_Anchor; } set { m_Anchor = value; } }
-        public Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
+        public Vector3 anchor { get { return m_Anchor; } set { m_Anchor = value; } }
+        public new Vector3 m_Anchor = new Vector3(0.5f, 0.5f, 0.5f);
 
         // Tile palette comp of cells property
         public class GenCell
@@ -102,7 +102,6 @@ namespace UnityEditor.Tilemaps
             if (go == null)
                 return;
 
-            Debug.Log("la1?");
             GameObject instance;
             if (PrefabUtility.IsPartOfPrefabAsset(go))
             {
@@ -120,7 +119,6 @@ namespace UnityEditor.Tilemaps
                 }
             }
 
-            Debug.Log("la12");
             Undo.RegisterCreatedObjectUndo(instance, "Paint GameObject");
 
             var cellSize = grid.cellSize;
@@ -137,7 +135,6 @@ namespace UnityEditor.Tilemaps
             instance.transform.localRotation = orientation;
             instance.transform.localScale = scale;
             instance.transform.Translate(offset);
-            Debug.Log("la3?");
         }
 
     }
