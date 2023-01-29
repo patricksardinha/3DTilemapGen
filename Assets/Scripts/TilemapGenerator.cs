@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,15 +39,22 @@ public class TilemapGenerator : MonoBehaviour
         //RenderTilemap();
     }
 
+    [ContextMenu("Render")]    
+    private void Render()
+    {
+        // TODO: clear last block size & generate a new block with the same or a new size.
+        
+
+    }
+
+    [ContextMenu("PaintTilemap")]
     /// <summary>
     /// Render the tilemap. The context menu can be call directly on play mode.
     /// Call the displayer to set active each tile of the current layer with animations.
     /// </summary>
-    [ContextMenu("RenderTilemap")]
-    private void RenderTilemap()
+    private void PaintTilemap()
     {
         int[,] block = GenerateBlockLayer();
-
         // TODO: iterate over layers
         for (int i = 0; i < block.GetLength(0); i++)
         {
@@ -56,7 +64,31 @@ public class TilemapGenerator : MonoBehaviour
                 Paint(gridLayout, parentLayer.transform, goPos, cellGen.go[block[i,j]], cellGen.offset, cellGen.scale, cellGen.orientation, baseGen.anchor);
             }
         }
-        displayer.HelloDisplayer(parentLayer);
+
+        StartCoroutine(displayer.HelloDisplayer(parentLayer));
+        Debug.Log("painttilemap() is done?");
+    }
+
+    [ContextMenu("TestClearTilemap")]
+    private void testClear()
+    {
+        StartCoroutine(displayer.ByeDisplayer(parentLayer));
+    }
+
+    [ContextMenu("ClearTilemap")]
+    private void ClearTilemap()
+    {
+        int[,] block = GenerateBlockLayer();
+        for (int i = 0; i < block.GetLength(0); i++)
+        {
+            for (int j = 0; j < block.GetLength(1); j++)
+            {
+                Vector3Int goPos = new Vector3Int(i, j, 0);
+                Clear(gridLayout, parentLayer.transform, goPos, baseGen.anchor);
+            }
+        }
+
+        Debug.Log("cleartilemap() is done?");
     }
 
 
@@ -73,8 +105,13 @@ public class TilemapGenerator : MonoBehaviour
     /// <param name="anchor">The center of mass of the gameobject.</param>
     private void Paint(GridLayout gridLayout, Transform parentLayer, Vector3Int position, GameObject go, Vector3 offset, Vector3 scale, Quaternion orientation, Vector3 anchor)
     {
-        Debug.Log("Paint");
         baseGen.PaintGo(gridLayout, parentLayer, position, go, offset, scale, orientation, anchor);
+    }
+
+
+    private void Clear(GridLayout gridLayout, Transform parentLayer, Vector3Int position, Vector3 anchor)
+    {
+        baseGen.ClearGo(gridLayout, parentLayer, position, anchor);
     }
 
     /// <summary>
@@ -121,7 +158,7 @@ public class TilemapGenerator : MonoBehaviour
                     default:
                         /// TODO: replace goIndex.Length by the size of gameobject array to randomly choose
                         /// and replace int[] index by gameobject[] listGameObject
-                        block[i, j] = Random.Range(2, goIndex.Length);
+                        block[i, j] = UnityEngine.Random.Range(2, goIndex.Length);
                         break;
                 }                
             }

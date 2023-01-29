@@ -30,7 +30,6 @@ namespace UnityEditor.Tilemaps
         [HideInInspector]
         public new GameObject hiddenGrid;
 
-
         // Tile palette cells property
         // Array of: GameObject to paint, Offset, Scale, Orientation 
         public new GenCell[] cells { get { return m_Cells; } }
@@ -137,6 +136,44 @@ namespace UnityEditor.Tilemaps
             instance.transform.Translate(offset);
 
             instance.SetActive(false);
+        }
+
+
+        public void ClearGo(GridLayout grid, Transform parent, Vector3Int position, Vector3 anchor)
+        {
+            GameObject erased = GetObjectInCell(grid, parent, new Vector3Int(position.x, position.y, position.z), anchor);
+            if (erased != null)
+                Undo.DestroyObjectImmediate(erased);
+        }
+
+
+        private GameObject GetObjectInCell(GridLayout grid, Transform parent, Vector3Int position, Vector3 anchor)
+        {
+            int childCount;
+            GameObject[] sceneChildren = null;
+            if (parent == null)
+            {
+                var scene = SceneManager.GetActiveScene();
+                sceneChildren = scene.GetRootGameObjects();
+                childCount = scene.rootCount;
+            }
+            else
+            {
+                childCount = parent.childCount;
+            }
+            var anchorCellOffset = Vector3Int.FloorToInt(anchor);
+            var cellSize = grid.cellSize;
+            anchorCellOffset.x = cellSize.x == 0 ? 0 : anchorCellOffset.x;
+            anchorCellOffset.y = cellSize.y == 0 ? 0 : anchorCellOffset.y;
+            anchorCellOffset.z = cellSize.z == 0 ? 0 : anchorCellOffset.z;
+
+            for (var i = 0; i < childCount; i++)
+            {
+                var child = sceneChildren == null ? parent.GetChild(i) : sceneChildren[i].transform;
+                if (position == grid.WorldToCell(child.position) - anchorCellOffset)
+                    return child.gameObject;
+            }
+            return null;
         }
 
     }

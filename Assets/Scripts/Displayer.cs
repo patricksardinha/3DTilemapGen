@@ -11,13 +11,27 @@ public class Displayer : MonoBehaviour
     }
 
     /// <summary>
-    /// Start the displayer for a layer.
+    /// Start the displayer true for a layer.
     /// </summary>
     /// <param name="layer">The current layer.</param>
-    public void HelloDisplayer(GameObject layer)
+    public IEnumerator HelloDisplayer(GameObject layer)
     {
-        //StartCoroutine(WaitAndDisplayInline(layer, 0.05f));
-        StartCoroutine(WaitAndDisplayRandom(layer, 0.05f));
+        bool activeFlag = true;
+        //yield return StartCoroutine(WaitAndDisplayInline(layer, 0.05f, activeFlag));
+        yield return StartCoroutine(WaitAndDisplayRandom(layer, 0.05f, activeFlag));
+        Debug.Log("hellodisplayer() is done?");
+    }
+
+    /// <summary>
+    /// Start the displayer false for a layer.
+    /// </summary>
+    /// <param name="layer">The current layer.</param>
+    public IEnumerator ByeDisplayer(GameObject layer)
+    {
+        bool activeFlag = false;
+        //yield return StartCoroutine(WaitAndDisplayInline(layer, 0.05f, activeFlag));
+        yield return StartCoroutine(WaitAndDisplayRandom(layer, 0.05f, activeFlag));
+        Debug.Log("byedisplayer() is done?");
     }
 
     /// <summary>
@@ -25,13 +39,14 @@ public class Displayer : MonoBehaviour
     /// </summary>
     /// <param name="layer">The current layer.</param>
     /// <param name="displayDelay">The delay to display.</param>
+    /// <param name="activeFlag">The flag to display or hide a tile.</param>
     /// <returns>Yield with delay.</returns>
-    private IEnumerator WaitAndDisplayInline(GameObject layer, float displayDelay)
+    private IEnumerator WaitAndDisplayInline(GameObject layer, float displayDelay, bool activeFlag)
     {
         foreach (Transform tile in layer.GetComponentsInChildren<Transform>(true))
         {
             yield return new WaitForSeconds(displayDelay);
-            tile.gameObject.SetActive(true);
+            tile.gameObject.SetActive(activeFlag);
         }
     }
 
@@ -40,8 +55,9 @@ public class Displayer : MonoBehaviour
     /// </summary>
     /// <param name="layer">The current layer.</param>
     /// <param name="displayDelay">The delay to display.</param>
+    /// <param name="activeFlag">The flag to display or hide a tile.</param>
     /// <returns>Yield with delay.</returns>
-    private IEnumerator WaitAndDisplayRandom(GameObject layer, float displayDelay)
+    private IEnumerator WaitAndDisplayRandom(GameObject layer, float displayDelay, bool activeFlag)
     {
         Transform[] inactiveGoInLayer = layer.GetComponentsInChildren<Transform>(true);
         List<GameObject> listGoInLayer = new List<GameObject>();
@@ -56,7 +72,7 @@ public class Displayer : MonoBehaviour
         foreach (GameObject tile in listGoShuffledInLayer)
         {
             yield return new WaitForSeconds(displayDelay);
-            tile.SetActive(true);
+            tile.SetActive(activeFlag);
         }
     }
 
