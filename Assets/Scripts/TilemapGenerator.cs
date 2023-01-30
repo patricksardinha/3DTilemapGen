@@ -61,7 +61,7 @@ public class TilemapGenerator : MonoBehaviour
             for (int j = 0; j < block.GetLength(1); j++)
             {
                 Vector3Int goPos = new Vector3Int(i, j, 0);
-                Paint(gridLayout, parentLayer.transform, goPos, cellGen.go[block[i,j]], cellGen.offset, cellGen.scale, cellGen.orientation, baseGen.anchor);
+                Paint(gridLayout, parentLayer.transform, goPos, cellGen.go[block[i,j]], new Vector3(0,0.5f,0), cellGen.scale, cellGen.orientation, baseGen.anchor);
             }
         }
 

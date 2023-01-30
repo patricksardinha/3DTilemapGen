@@ -4,10 +4,69 @@ using UnityEngine;
 
 public class Displayer : MonoBehaviour
 {
+    // TODO: fix for iteration on grid's childs and layers' childs 
+    public GameObject layer;
+    public int layerLevel = 0;
+
+    private float offSetParameter = 1.0f;
+
+    private bool updateForPainting = false;
+    private bool updateForCleaning = false;
 
     void Update()
     {
-        
+        // TODO: check for all layers
+        bool isLayerUpdated = CheckForUpdate(layer, layerLevel);
+        if (updateForPainting)
+        {
+            if (isLayerUpdated)
+            {
+                updateForPainting = false;
+            }
+            else
+            {
+                foreach (Transform tile in layer.GetComponentsInChildren<Transform>())
+                {
+                    if (tile.transform.position.y != 0)
+                    {
+                        tile.transform.position = Vector3.MoveTowards(tile.transform.position, new Vector3(tile.transform.position.x, 0, tile.transform.position.z), 0.5f * Time.deltaTime);
+                    }
+                }
+            }
+        } 
+        /*
+        else if (updateForCleaning)
+        {
+            Debug.Log("ok");
+        }
+        */
+    }
+
+    private bool CheckForUpdate(GameObject layer, int layerLevel)
+    {
+        // TODO: Get object list out of update method
+        bool updated = true;
+        Transform[] inactiveGoInLayer = layer.GetComponentsInChildren<Transform>(true);
+        List<GameObject> listGoInLayer = new List<GameObject>();
+
+        foreach (Transform go in inactiveGoInLayer)
+        {
+            if (!go.CompareTag("layer"))
+                listGoInLayer.Add(go.gameObject);
+        }
+
+        foreach (GameObject go in listGoInLayer)
+        {
+            if (go.transform.position.y != layerLevel)
+            {
+                updated = false;
+                updateForPainting = true;
+                // TODO: shortcut calculs
+                // return updated;
+            }
+        }
+        Debug.Log("updated?" + updated);
+        return updated;
     }
 
     /// <summary>
@@ -45,8 +104,18 @@ public class Displayer : MonoBehaviour
     {
         foreach (Transform tile in layer.GetComponentsInChildren<Transform>(true))
         {
-            yield return new WaitForSeconds(displayDelay);
-            tile.gameObject.SetActive(activeFlag);
+            if (!tile.CompareTag("layer")) { 
+                if (activeFlag)
+                {
+                    yield return new WaitForSeconds(displayDelay);
+                    tile.gameObject.SetActive(activeFlag);
+                }
+                else
+                {
+                    yield return new WaitForSeconds(displayDelay);
+                    tile.gameObject.SetActive(activeFlag);
+                }
+            }
         }
     }
 
@@ -59,20 +128,32 @@ public class Displayer : MonoBehaviour
     /// <returns>Yield with delay.</returns>
     private IEnumerator WaitAndDisplayRandom(GameObject layer, float displayDelay, bool activeFlag)
     {
+        // IMPORTANT TODO: check if ground gameobject is taken
+        // if yes remove it
         Transform[] inactiveGoInLayer = layer.GetComponentsInChildren<Transform>(true);
         List<GameObject> listGoInLayer = new List<GameObject>();
 
         foreach (Transform go in inactiveGoInLayer)
         {
-            listGoInLayer.Add(go.gameObject);
+            if (!go.CompareTag("layer"))
+                listGoInLayer.Add(go.gameObject);
         }
 
         List<GameObject> listGoShuffledInLayer = ShuffleGameobjects(listGoInLayer);
 
+
         foreach (GameObject tile in listGoShuffledInLayer)
         {
-            yield return new WaitForSeconds(displayDelay);
-            tile.SetActive(activeFlag);
+            if (activeFlag)
+            {
+                yield return new WaitForSeconds(displayDelay);
+                tile.SetActive(activeFlag);
+            }
+            else
+            {
+                yield return new WaitForSeconds(displayDelay);
+                tile.SetActive(activeFlag);
+            }
         }
     }
 
@@ -92,4 +173,6 @@ public class Displayer : MonoBehaviour
         }
         return listGo;
     }
+
+
 }

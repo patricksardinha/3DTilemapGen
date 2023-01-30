@@ -158,7 +158,7 @@ MonoBehaviour:
   TilemapSize: {x: 10, y: 10}
   tileObj:
   - {fileID: 919132149155446097, guid: ce86609b92b2c7c4f99034a38655d8e9, type: 3}
-  - {fileID: 919132149155446097, guid: 4789f716b2a95bf49a0fc72d5646c75c, type: 3}
+  - {fileID: 1292372587081081004, guid: 3f9a8e3679946134294c280eabbd0601, type: 3}
 --- !u!4 &134220993
 Transform:
   m_ObjectHideFlags: 0
@@ -186,6 +186,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4dfff2738a8ba1142a04ae9128c8c620, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  layer: {fileID: 1513105091}
+  layerLevel: 0
 --- !u!1 &506769438
 GameObject:
   m_ObjectHideFlags: 0
@@ -595,7 +597,7 @@ GameObject:
   - component: {fileID: 1513105093}
   m_Layer: 0
   m_Name: Ground1
-  m_TagString: Untagged
+  m_TagString: layer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
