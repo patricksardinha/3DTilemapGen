@@ -5,7 +5,8 @@ using UnityEngine;
 public class Displayer : MonoBehaviour
 {
     // TODO: fix for iteration on grid's childs and layers' childs 
-    public GameObject layer;
+    private GameObject[] arrayLayers;
+    private string[] infoArrayLayers;
     public int layerLevel = 0;
 
     private float offSetParameter = 1.0f;
@@ -16,53 +17,58 @@ public class Displayer : MonoBehaviour
     void Update()
     {
         // TODO: check for all layers
-        bool isLayerUpdated = CheckForUpdate(layer, layerLevel);
-        if (updateForPainting)
+        if (arrayLayers != null)
         {
-            if (isLayerUpdated)
+            bool isLayerUpdated = CheckForUpdate(arrayLayers[0], layerLevel);
+            if (updateForPainting)
             {
-                updateForPainting = false;
-            }
-            else
-            {
-                foreach (Transform tile in layer.GetComponentsInChildren<Transform>())
+                if (isLayerUpdated)
                 {
-                    if (tile.transform.position.y != 0)
+                    updateForPainting = false;
+                }
+                else
+                {
+                    foreach (Transform tile in arrayLayers[0].GetComponentsInChildren<Transform>())
                     {
-                        tile.transform.position = Vector3.MoveTowards(tile.transform.position, new Vector3(tile.transform.position.x, 0, tile.transform.position.z), 0.5f * Time.deltaTime);
+                        if (tile.transform.position.y != 0)
+                        {
+                            tile.transform.position = Vector3.MoveTowards(tile.transform.position, new Vector3(tile.transform.position.x, 0, tile.transform.position.z), 0.5f * Time.deltaTime);
+                        }
                     }
                 }
+            } 
+            /*
+            else if (updateForCleaning)
+            {
+                Debug.Log("ok");
             }
-        } 
-        /*
-        else if (updateForCleaning)
-        {
-            Debug.Log("ok");
+            */
         }
-        */
     }
 
     private bool CheckForUpdate(GameObject layer, int layerLevel)
     {
         // TODO: Get object list out of update method
         bool updated = true;
-        Transform[] inactiveGoInLayer = layer.GetComponentsInChildren<Transform>(true);
-        List<GameObject> listGoInLayer = new List<GameObject>();
+        if (layer != null) {
+            Transform[] inactiveGoInLayer = layer.GetComponentsInChildren<Transform>(true);
+            List<GameObject> listGoInLayer = new List<GameObject>();
 
-        foreach (Transform go in inactiveGoInLayer)
-        {
-            if (!go.CompareTag("layer"))
-                listGoInLayer.Add(go.gameObject);
-        }
-
-        foreach (GameObject go in listGoInLayer)
-        {
-            if (go.transform.position.y != layerLevel)
+            foreach (Transform go in inactiveGoInLayer)
             {
-                updated = false;
-                updateForPainting = true;
-                // TODO: shortcut calculs
-                // return updated;
+                if (!go.CompareTag("layer"))
+                    listGoInLayer.Add(go.gameObject);
+            }
+
+            foreach (GameObject go in listGoInLayer)
+            {
+                if (go.transform.position.y != layerLevel)
+                {
+                    updated = false;
+                    updateForPainting = true;
+                    // TODO: shortcut calculs
+                    // return updated;
+                }
             }
         }
         Debug.Log("updated?" + updated);
@@ -73,12 +79,21 @@ public class Displayer : MonoBehaviour
     /// Start the displayer true for a layer.
     /// </summary>
     /// <param name="layer">The current layer.</param>
-    public IEnumerator HelloDisplayer(GameObject layer)
+    public IEnumerator HelloDisplayer(GameObject[] layers)
     {
         bool activeFlag = true;
-        //yield return StartCoroutine(WaitAndDisplayInline(layer, 0.05f, activeFlag));
-        yield return StartCoroutine(WaitAndDisplayRandom(layer, 0.05f, activeFlag));
-        Debug.Log("hellodisplayer() is done?");
+        //yield return StartCoroutine(WaitAndDisplayInline(layers[0], 0.05f, activeFlag));
+        arrayLayers = layers;
+        for (int i = 0; i < arrayLayers.Length; i++)
+        {
+            infoArrayLayers[i] = "noUpdate";
+        }
+
+        foreach (GameObject layer in arrayLayers)
+        {
+           yield return StartCoroutine(WaitAndDisplayRandom(layer, 0.05f, activeFlag));
+           Debug.Log("hellodisplayer() is done: " + layer.name);
+        }
     }
 
     /// <summary>
@@ -88,9 +103,29 @@ public class Displayer : MonoBehaviour
     public IEnumerator ByeDisplayer(GameObject layer)
     {
         bool activeFlag = false;
-        //yield return StartCoroutine(WaitAndDisplayInline(layer, 0.05f, activeFlag));
+        //yield return StartCoroutine(WaitAndDisplayInline(layer[0], 0.05f, activeFlag));
+
         yield return StartCoroutine(WaitAndDisplayRandom(layer, 0.05f, activeFlag));
         Debug.Log("byedisplayer() is done?");
+    }
+
+    private void GetActiveGoInLayer(GameObject layer)
+    {
+
+    }
+
+    private List<GameObject> GetAllGoInLayer(GameObject layer)
+    {
+        Transform[] allGoInLayer = layer.GetComponentsInChildren<Transform>(true);
+        List<GameObject> listAllGoInLayer = new List<GameObject>();
+
+        foreach (Transform go in allGoInLayer)
+        {
+            if (!go.CompareTag("layer"))
+                listAllGoInLayer.Add(go.gameObject);
+        }
+
+        return listAllGoInLayer;
     }
 
     /// <summary>
@@ -127,20 +162,10 @@ public class Displayer : MonoBehaviour
     /// <param name="activeFlag">The flag to display or hide a tile.</param>
     /// <returns>Yield with delay.</returns>
     private IEnumerator WaitAndDisplayRandom(GameObject layer, float displayDelay, bool activeFlag)
-    {
-        // IMPORTANT TODO: check if ground gameobject is taken
-        // if yes remove it
-        Transform[] inactiveGoInLayer = layer.GetComponentsInChildren<Transform>(true);
-        List<GameObject> listGoInLayer = new List<GameObject>();
-
-        foreach (Transform go in inactiveGoInLayer)
-        {
-            if (!go.CompareTag("layer"))
-                listGoInLayer.Add(go.gameObject);
-        }
-
+    { 
+        
+        List<GameObject> listGoInLayer = GetAllGoInLayer(layer);
         List<GameObject> listGoShuffledInLayer = ShuffleGameobjects(listGoInLayer);
-
 
         foreach (GameObject tile in listGoShuffledInLayer)
         {

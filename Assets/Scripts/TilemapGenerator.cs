@@ -15,7 +15,7 @@ public class TilemapGenerator : MonoBehaviour
     public GridLayout gridLayout;
 
     // TODO: each parent layer should be create each time the offset increase by 1 
-    public GameObject parentLayer;
+    public GameObject[] parentLayer;
 
     public Vector2Int TilemapSize;
 
@@ -54,25 +54,33 @@ public class TilemapGenerator : MonoBehaviour
     /// </summary>
     private void PaintTilemap()
     {
-        int[,] block = GenerateBlockLayer();
-        // TODO: iterate over layers
-        for (int i = 0; i < block.GetLength(0); i++)
+        // TODO: iterate over layer here to build layer by layer
+        int layerIndex = 0;
+        foreach (GameObject l in parentLayer)
         {
-            for (int j = 0; j < block.GetLength(1); j++)
+            Debug.Log("L? " + l);
+            int[,] block = GenerateBlockLayer();
+            for (int i = 0; i < block.GetLength(0); i++)
             {
-                Vector3Int goPos = new Vector3Int(i, j, 0);
-                Paint(gridLayout, parentLayer.transform, goPos, cellGen.go[block[i,j]], new Vector3(0,0.5f,0), cellGen.scale, cellGen.orientation, baseGen.anchor);
+                for (int j = 0; j < block.GetLength(1); j++)
+                {
+                    Vector3Int goPos = new Vector3Int(i, j, 0);
+                    Paint(gridLayout, l.transform, goPos, cellGen.go[block[i, j]], new Vector3(0, 0.5f + layerIndex, 0), cellGen.scale, cellGen.orientation, baseGen.anchor);
+                }
             }
+            layerIndex++;
         }
-
+        // TODO: displayer for each layer
+        //Displayer d = new Displayer();
         StartCoroutine(displayer.HelloDisplayer(parentLayer));
         Debug.Log("painttilemap() is done?");
+        
     }
 
     [ContextMenu("TestClearTilemap")]
     private void testClear()
     {
-        StartCoroutine(displayer.ByeDisplayer(parentLayer));
+        StartCoroutine(displayer.ByeDisplayer(parentLayer[0]));
     }
 
     [ContextMenu("ClearTilemap")]
@@ -84,7 +92,7 @@ public class TilemapGenerator : MonoBehaviour
             for (int j = 0; j < block.GetLength(1); j++)
             {
                 Vector3Int goPos = new Vector3Int(i, j, 0);
-                Clear(gridLayout, parentLayer.transform, goPos, baseGen.anchor);
+                Clear(gridLayout, parentLayer[0].transform, goPos, baseGen.anchor);
             }
         }
 

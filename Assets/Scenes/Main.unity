@@ -154,7 +154,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridLayout: {fileID: 1897170936}
-  parentLayer: {fileID: 1513105091}
+  parentLayer:
+  - {fileID: 1513105091}
+  - {fileID: 506769438}
   TilemapSize: {x: 10, y: 10}
   tileObj:
   - {fileID: 919132149155446097, guid: ce86609b92b2c7c4f99034a38655d8e9, type: 3}
