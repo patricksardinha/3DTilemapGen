@@ -7,11 +7,10 @@ public class Displayer : MonoBehaviour
     // TODO: fix for iteration on grid's childs and layers' childs 
     private GameObject[] arrayLayers;
     private string[] infoArrayLayers;
-    public int layerLevel = 0;
 
+    [SerializeField] private float tileAnimationSpeed;
     private float offSetParameter = 1.0f;
 
-    private bool updateForPainting = false;
     private bool updateForCleaning = false;
 
     void Update()
@@ -19,37 +18,49 @@ public class Displayer : MonoBehaviour
         // TODO: check for all layers
         if (arrayLayers != null)
         {
-            bool isLayerUpdated = CheckForUpdate(arrayLayers[0], layerLevel);
-            if (updateForPainting)
+            for (int i = 0; i < arrayLayers.Length; i++)
             {
-                if (isLayerUpdated)
+                int layerLevel = i;
+
+                while (infoArrayLayers[i] == "updating")
                 {
-                    updateForPainting = false;
-                }
-                else
-                {
-                    foreach (Transform tile in arrayLayers[0].GetComponentsInChildren<Transform>())
+                    bool isLayerUpdated;
+                    bool updateForPainting;
+                    (isLayerUpdated, updateForPainting) = CheckForUpdate(arrayLayers[i], layerLevel);
+
+                    if (updateForPainting)
                     {
-                        if (tile.transform.position.y != 0)
+                        if (isLayerUpdated)
                         {
-                            tile.transform.position = Vector3.MoveTowards(tile.transform.position, new Vector3(tile.transform.position.x, 0, tile.transform.position.z), 0.5f * Time.deltaTime);
+                            updateForPainting = false;
                         }
+                        else
+                        {
+                            foreach (Transform tile in arrayLayers[i].GetComponentsInChildren<Transform>())
+                            {
+                                if (tile.transform.position.y != layerLevel)
+                                {
+                                    tile.transform.position = Vector3.MoveTowards(tile.transform.position, new Vector3(tile.transform.position.x, layerLevel, tile.transform.position.z), (1/tileAnimationSpeed) * Time.deltaTime);
+                                }
+                            }
+                        }
+                    } 
+                    /*
+                    else if (updateForCleaning)
+                    {
+                        Debug.Log("ok");
                     }
+                    */
                 }
-            } 
-            /*
-            else if (updateForCleaning)
-            {
-                Debug.Log("ok");
             }
-            */
         }
     }
 
-    private bool CheckForUpdate(GameObject layer, int layerLevel)
+    private (bool, bool) CheckForUpdate(GameObject layer, int layerLevel)
     {
         // TODO: Get object list out of update method
         bool updated = true;
+        bool updateForP = false;
         if (layer != null) {
             Transform[] inactiveGoInLayer = layer.GetComponentsInChildren<Transform>(true);
             List<GameObject> listGoInLayer = new List<GameObject>();
@@ -65,14 +76,14 @@ public class Displayer : MonoBehaviour
                 if (go.transform.position.y != layerLevel)
                 {
                     updated = false;
-                    updateForPainting = true;
+                    updateForP = true;
                     // TODO: shortcut calculs
                     // return updated;
                 }
             }
         }
         Debug.Log("updated?" + updated);
-        return updated;
+        return (updated, updateForP);
     }
 
     /// <summary>
@@ -84,11 +95,16 @@ public class Displayer : MonoBehaviour
         bool activeFlag = true;
         //yield return StartCoroutine(WaitAndDisplayInline(layers[0], 0.05f, activeFlag));
         arrayLayers = layers;
-        for (int i = 0; i < arrayLayers.Length; i++)
-        {
-            infoArrayLayers[i] = "noUpdate";
-        }
 
+        // Displayer was called so infoArrayLayers is created.
+        // Both array have the same size.
+        if (infoArrayLayers != null)
+        {
+            for (int i = 0; i < arrayLayers.Length; i++)
+            {
+                infoArrayLayers[i] = "noUpdate";
+            }
+        }
         foreach (GameObject layer in arrayLayers)
         {
            yield return StartCoroutine(WaitAndDisplayRandom(layer, 0.05f, activeFlag));
