@@ -16,25 +16,24 @@ public class Displayer : MonoBehaviour
     void Update()
     {
         // TODO: check for all layers
-        if (arrayLayers != null)
+        if (arrayLayers != null && infoArrayLayers != null)
         {
+            int currentLayerUpdating = 0;
             for (int i = 0; i < arrayLayers.Length; i++)
             {
                 int layerLevel = i;
-
-                while (infoArrayLayers[i] == "updating")
+                Debug.Log("LAYER: " + currentLayerUpdating + "------> " + infoArrayLayers[i]);
+                if (i == currentLayerUpdating && infoArrayLayers[i] == "updating")
                 {
                     bool isLayerUpdated;
                     bool updateForPainting;
                     (isLayerUpdated, updateForPainting) = CheckForUpdate(arrayLayers[i], layerLevel);
 
+                    Debug.Log("ufp: " + updateForPainting + " -- ilu: " + isLayerUpdated);
+                    // TODO: Fix delay for second layer?
                     if (updateForPainting)
                     {
-                        if (isLayerUpdated)
-                        {
-                            updateForPainting = false;
-                        }
-                        else
+                        if (!isLayerUpdated)
                         {
                             foreach (Transform tile in arrayLayers[i].GetComponentsInChildren<Transform>())
                             {
@@ -44,13 +43,27 @@ public class Displayer : MonoBehaviour
                                 }
                             }
                         }
-                    } 
+                        else
+                        {
+                            infoArrayLayers[i] = "updated";
+                            currentLayerUpdating++;
+                        }
+                    }
+                    else
+                    {
+                        infoArrayLayers[i] = "updated";
+                        currentLayerUpdating++;
+                    }
                     /*
                     else if (updateForCleaning)
                     {
                         Debug.Log("ok");
                     }
                     */
+                }
+                else
+                {
+                    currentLayerUpdating++;
                 }
             }
         }
@@ -95,20 +108,30 @@ public class Displayer : MonoBehaviour
         bool activeFlag = true;
         //yield return StartCoroutine(WaitAndDisplayInline(layers[0], 0.05f, activeFlag));
         arrayLayers = layers;
+        infoArrayLayers = new string[arrayLayers.Length] ;
 
+        Debug.Log("hello ---> " + infoArrayLayers.Length);
         // Displayer was called so infoArrayLayers is created.
         // Both array have the same size.
-        if (infoArrayLayers != null)
+        if (arrayLayers != null)
         {
             for (int i = 0; i < arrayLayers.Length; i++)
             {
                 infoArrayLayers[i] = "noUpdate";
             }
-        }
-        foreach (GameObject layer in arrayLayers)
-        {
-           yield return StartCoroutine(WaitAndDisplayRandom(layer, 0.05f, activeFlag));
-           Debug.Log("hellodisplayer() is done: " + layer.name);
+
+            infoArrayLayers[0] = "updating";
+            for (int i = 0; i < arrayLayers.Length; i++) {
+                if (i == arrayLayers.Length - 2)
+                {
+                    yield return new WaitForSeconds(0.1f);
+                    infoArrayLayers[arrayLayers.Length - 1] = "updating";
+                }
+                
+                yield return StartCoroutine(WaitAndDisplayRandom(arrayLayers[i], 0.05f, activeFlag));
+                Debug.Log("hellodisplayer() is done: " + arrayLayers[i].name);
+
+            }
         }
     }
 
